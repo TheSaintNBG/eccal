@@ -186,6 +186,7 @@ export default function AircraftManager() {
                       <th className="px-3 py-2.5 font-medium">Kennzeichen</th>
                       <th className="px-3 py-2.5 font-medium">Typ</th>
                       <th className="px-3 py-2.5 font-medium text-right">MTOW (t)</th>
+                      <th className="px-3 py-2.5 font-medium text-right">Faktor</th>
                       <th className="px-3 py-2.5"></th>
                     </tr>
                   </thead>
@@ -198,6 +199,9 @@ export default function AircraftManager() {
                         <td className="px-3 py-2 text-slate-500">{a.type || "—"}</td>
                         <td className="px-3 py-2 text-right font-mono text-slate-800 tabular-nums">
                           {a.mtow_tonnes}
+                        </td>
+                        <td className="px-3 py-2 text-right font-mono text-indigo-700 tabular-nums">
+                          {Math.sqrt(a.mtow_tonnes / 50).toFixed(3)}
                         </td>
                         <td className="px-3 py-2 text-right">
                           <button
