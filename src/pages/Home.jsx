@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { MapPin, Loader2, Globe2, Search, Navigation, Plane } from "lucide-react";
+import { MapPin, Loader2, Globe2, Search, Navigation, Plane, Route } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -123,6 +123,10 @@ export default function Home() {
             <Link to="/airports" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-sky-500 transition-colors">
               <Plane className="w-4 h-4" />
               Flughäfen
+            </Link>
+            <Link to="/flightplan" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-rose-500 transition-colors">
+              <Route className="w-4 h-4" />
+              Flugplan
             </Link>
           </div>
         </div>
