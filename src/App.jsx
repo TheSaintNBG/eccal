@@ -11,6 +11,7 @@ import Home from '@/pages/Home';
 import Waypoints from '@/pages/Waypoints';
 import Airports from '@/pages/Airports';
 import FlightPlan from '@/pages/FlightPlan';
+import RouteCharges from '@/pages/RouteCharges';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -43,6 +44,7 @@ const AuthenticatedApp = () => {
       <Route path="/waypoints" element={<Waypoints />} />
       <Route path="/airports" element={<Airports />} />
       <Route path="/flightplan" element={<FlightPlan />} />
+      <Route path="/routecharges" element={<RouteCharges />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
