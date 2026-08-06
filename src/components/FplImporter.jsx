@@ -93,7 +93,6 @@ export default function FplImporter({ airports = [], waypoints = [], onImport })
       <input
         ref={inputRef}
         type="file"
-        accept=".fpl,.xml,application/xml,text/xml"
         className="hidden"
         onChange={(e) => handleFile(e.target.files?.[0])}
       />
