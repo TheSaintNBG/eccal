@@ -1,0 +1,36 @@
+{
+  "name": "Waypoint",
+  "type": "object",
+  "properties": {
+    "ident": {
+      "type": "string",
+      "description": "Wegpunkt-Identifikator (z.B. 06TRA)"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Breitengrad als Dezimalgrad"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "L\u00e4ngengrad als Dezimalgrad"
+    },
+    "lat_dms": {
+      "type": "string",
+      "description": "Breitengrad im DMS-Format"
+    },
+    "lng_dms": {
+      "type": "string",
+      "description": "L\u00e4ngengrad im DMS-Format"
+    },
+    "country_code": {
+      "type": "string",
+      "description": "ISO 3166-1 Alpha-2 L\u00e4ndercode",
+      "default": "DE"
+    }
+  },
+  "required": [
+    "ident",
+    "latitude",
+    "longitude"
+  ]
+}

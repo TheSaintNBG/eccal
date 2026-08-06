@@ -2,7 +2,8 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { MapPin, Loader2, Globe2, Search } from "lucide-react";
+import { MapPin, Loader2, Globe2, Search, Navigation } from "lucide-react";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -114,6 +115,10 @@ export default function Home() {
             <h1 className="text-lg font-semibold tracking-tight text-slate-900">GeoFinder</h1>
             <p className="text-xs text-slate-500">Land anhand von Koordinaten bestimmen</p>
           </div>
+          <Link to="/waypoints" className="ml-auto inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-rose-500 transition-colors">
+            <Navigation className="w-4 h-4" />
+            Wegpunkte
+          </Link>
         </div>
       </header>
 
