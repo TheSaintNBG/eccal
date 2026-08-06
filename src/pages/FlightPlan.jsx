@@ -17,6 +17,8 @@ import FlightPlanMap from "@/components/FlightPlanMap";
 import FlightPlanSaver from "@/components/FlightPlanSaver";
 import RouteChargeCalculator from "@/components/RouteChargeCalculator";
 import AircraftSelector from "@/components/AircraftSelector";
+import FlightPlanUpload from "@/components/FlightPlanUpload";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { useAviationData } from "@/hooks/useAviationData";
 
 // Großkreis-Entfernung (Haversine) in km
@@ -37,6 +39,7 @@ export default function FlightPlan() {
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [aircraft, setAircraft] = useState(null);
+  const [tab, setTab] = useState("plan");
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -96,6 +99,11 @@ export default function FlightPlan() {
     });
   };
 
+  const importFromPdf = (newStops) => {
+    setStops(newStops);
+    setTab("plan");
+  };
+
   const role = (i) =>
     i === 0 ? "Start" : i === stops.length - 1 ? "Ziel" : "Wegpunkt";
 
@@ -138,7 +146,13 @@ export default function FlightPlan() {
       </header>
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
+        <Tabs value={tab} onValueChange={setTab}>
+          <TabsList className="mb-6">
+            <TabsTrigger value="plan">Flugplan</TabsTrigger>
+            <TabsTrigger value="upload">PDF-Upload</TabsTrigger>
+          </TabsList>
+          <TabsContent value="plan" className="space-y-8">
+            <div className="grid lg:grid-cols-2 gap-8">
           {/* Linke Spalte: Eingabe + Liste + Entfernungen */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
             <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2 mb-4">
@@ -318,19 +332,24 @@ export default function FlightPlan() {
             </h2>
             <AircraftSelector value={aircraft} onChange={setAircraft} />
           </div>
-        </div>
+            </div>
 
-        <RouteChargeCalculator stops={stops} aircraft={aircraft} />
+            <RouteChargeCalculator stops={stops} aircraft={aircraft} />
 
-        <FlightPlanSaver
-          stops={stops}
-          total={total}
-          aircraft={aircraft}
-          onLoad={(loadedStops, loadedAircraft) => {
-            setStops(loadedStops);
-            setAircraft(loadedAircraft);
-          }}
-        />
+            <FlightPlanSaver
+              stops={stops}
+              total={total}
+              aircraft={aircraft}
+              onLoad={(loadedStops, loadedAircraft) => {
+                setStops(loadedStops);
+                setAircraft(loadedAircraft);
+              }}
+            />
+          </TabsContent>
+          <TabsContent value="upload">
+            <FlightPlanUpload onImport={importFromPdf} />
+          </TabsContent>
+        </Tabs>
       </main>
     </div>
   );
