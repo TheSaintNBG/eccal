@@ -17,6 +17,7 @@ import FlightPlanMap from "@/components/FlightPlanMap";
 import FlightPlanSaver from "@/components/FlightPlanSaver";
 import RouteChargeCalculator from "@/components/RouteChargeCalculator";
 import AircraftSelector from "@/components/AircraftSelector";
+import FplImporter from "@/components/FplImporter";
 import { useAviationData } from "@/hooks/useAviationData";
 
 // Großkreis-Entfernung (Haversine) in km
@@ -145,6 +146,12 @@ export default function FlightPlan() {
               <Plus className="w-4 h-4 text-rose-500" />
               Station hinzufügen
             </h2>
+
+            <FplImporter
+              airports={airports}
+              waypoints={waypoints}
+              onImport={setStops}
+            />
 
             <div className="relative mb-4">
               <Search className="w-4 h-4 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
