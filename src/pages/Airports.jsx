@@ -13,8 +13,20 @@ export default function Airports() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await base44.entities.Airport.list("-icao", 5000);
-        setAirports(data);
+        // SDK liefert max. 5000 pro Aufruf -> Cursor-Paginierung über icao
+        const LIMIT = 5000;
+        let all = [];
+        let cursor = null;
+        for (let i = 0; i < 5; i++) {
+          const batch =
+            cursor === null
+              ? await base44.entities.Airport.list("-icao", LIMIT)
+              : await base44.entities.Airport.filter({ icao: { $lt: cursor } }, "-icao", LIMIT);
+          all = all.concat(batch);
+          if (batch.length < LIMIT) break;
+          cursor = batch[batch.length - 1].icao;
+        }
+        setAirports(all);
       } catch (e) {
         // ignore
       } finally {
