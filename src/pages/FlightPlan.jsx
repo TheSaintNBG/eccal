@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import FlightPlanMap from "@/components/FlightPlanMap";
+import FlightPlanSaver from "@/components/FlightPlanSaver";
 import { useAviationData } from "@/hooks/useAviationData";
 
 // Großkreis-Entfernung (Haversine) in km
@@ -308,6 +309,8 @@ export default function FlightPlan() {
             </p>
           </div>
         </div>
+
+        <FlightPlanSaver stops={stops} total={total} onLoad={setStops} />
       </main>
     </div>
   );

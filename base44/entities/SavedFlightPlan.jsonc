@@ -1,0 +1,52 @@
+{
+  "name": "SavedFlightPlan",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name des Flugplans"
+    },
+    "total_km": {
+      "type": "number",
+      "description": "Gesamtstrecke in km"
+    },
+    "stop_count": {
+      "type": "number",
+      "description": "Anzahl der Stationen"
+    },
+    "stops": {
+      "type": "array",
+      "description": "Liste der Stationen (Code, Name, Koordinaten)",
+      "items": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string"
+          },
+          "code": {
+            "type": "string"
+          },
+          "sub": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "country": {
+            "type": "string"
+          },
+          "lat": {
+            "type": "number"
+          },
+          "lng": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "stops"
+  ]
+}
