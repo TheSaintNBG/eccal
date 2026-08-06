@@ -4,7 +4,7 @@ import { Save, FolderOpen, Trash2, Loader2, Route as RouteIcon } from "lucide-re
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
-export default function FlightPlanSaver({ stops, total, onLoad }) {
+export default function FlightPlanSaver({ stops, total, aircraft, onLoad }) {
   const [name, setName] = useState("");
   const [plans, setPlans] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -37,6 +37,9 @@ export default function FlightPlanSaver({ stops, total, onLoad }) {
         name: n,
         total_km: Math.round(total * 10) / 10,
         stop_count: stops.length,
+        aircraft_id: aircraft?.id || "",
+        aircraft_registration: aircraft?.registration || "",
+        aircraft_mtow_tonnes: aircraft?.mtow_tonnes ?? null,
         stops: stops.map((s) => ({
           type: s.type,
           code: s.code,
@@ -57,7 +60,19 @@ export default function FlightPlanSaver({ stops, total, onLoad }) {
   };
 
   const open = (plan) => {
-    onLoad((plan.stops || []).map((s) => ({ ...s, key: Math.random().toString(36).slice(2) })));
+    const loadedStops = (plan.stops || []).map((s) => ({
+      ...s,
+      key: Math.random().toString(36).slice(2),
+    }));
+    const loadedAircraft =
+      plan.aircraft_registration
+        ? {
+            id: plan.aircraft_id || null,
+            registration: plan.aircraft_registration,
+            mtow_tonnes: plan.aircraft_mtow_tonnes ?? null,
+          }
+        : null;
+    onLoad(loadedStops, loadedAircraft);
   };
 
   const remove = async (id) => {
@@ -126,6 +141,7 @@ export default function FlightPlanSaver({ stops, total, onLoad }) {
                   <p className="text-xs text-slate-500">
                     {p.stop_count ?? (p.stops?.length || 0)} Stationen
                     {p.total_km != null ? ` · ${p.total_km.toFixed(1)} km` : ""}
+                    {p.aircraft_registration ? ` · ${p.aircraft_registration}` : ""}
                   </p>
                 </div>
                 <button

@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import FlightPlanMap from "@/components/FlightPlanMap";
 import FlightPlanSaver from "@/components/FlightPlanSaver";
+import AircraftSelector from "@/components/AircraftSelector";
 import { useAviationData } from "@/hooks/useAviationData";
 
 // Großkreis-Entfernung (Haversine) in km
@@ -34,6 +35,7 @@ export default function FlightPlan() {
   const [stops, setStops] = useState([]);
   const [query, setQuery] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
+  const [aircraft, setAircraft] = useState(null);
 
   const matches = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -307,10 +309,24 @@ export default function FlightPlan() {
               Grün = Start, Blau = Wegpunkt, Rot = Ziel. Entfernungen als
               Großkreis (Haversine).
             </p>
+
+            <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2 mt-6 mb-3">
+              <Plane className="w-4 h-4 text-indigo-500" />
+              Flugzeug
+            </h2>
+            <AircraftSelector value={aircraft} onChange={setAircraft} />
           </div>
         </div>
 
-        <FlightPlanSaver stops={stops} total={total} onLoad={setStops} />
+        <FlightPlanSaver
+          stops={stops}
+          total={total}
+          aircraft={aircraft}
+          onLoad={(loadedStops, loadedAircraft) => {
+            setStops(loadedStops);
+            setAircraft(loadedAircraft);
+          }}
+        />
       </main>
     </div>
   );

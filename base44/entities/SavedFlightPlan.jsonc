@@ -14,6 +14,18 @@
       "type": "number",
       "description": "Anzahl der Stationen"
     },
+    "aircraft_id": {
+      "type": "string",
+      "description": "Zugeordnetes Flugzeug (ID)"
+    },
+    "aircraft_registration": {
+      "type": "string",
+      "description": "Kennzeichen des zugeordneten Flugzeugs"
+    },
+    "aircraft_mtow_tonnes": {
+      "type": "number",
+      "description": "MTOW des zugeordneten Flugzeugs in Tonnen"
+    },
     "stops": {
       "type": "array",
       "description": "Liste der Stationen (Code, Name, Koordinaten)",
