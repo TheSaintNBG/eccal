@@ -1,0 +1,43 @@
+{
+  "name": "RouteCharge",
+  "type": "object",
+  "properties": {
+    "zone": {
+      "type": "string",
+      "description": "Zonenname (z.B. Germany, France)"
+    },
+    "zone_label": {
+      "type": "string",
+      "description": "Vollst\u00e4ndige Bezeichnung (z.B. Allemagne / Germany)"
+    },
+    "national_unit_rate_eur": {
+      "type": "number",
+      "description": "Nationaler Einheitssatz in EUR"
+    },
+    "global_unit_rate_eur": {
+      "type": "number",
+      "description": "Globaler Einheitssatz in EUR"
+    },
+    "exchange_rate": {
+      "type": "number",
+      "description": "Wechselkurs (1 EUR = x Lokalw\u00e4hrung)"
+    },
+    "currency_code": {
+      "type": "string",
+      "description": "W\u00e4hrungscode (z.B. GBP, DKK) oder EUR"
+    },
+    "valid_month": {
+      "type": "string",
+      "description": "G\u00fcltigkeitsmonat (z.B. 2026-08)"
+    },
+    "emu_member": {
+      "type": "boolean",
+      "description": "Mitglied der Europ\u00e4ischen W\u00e4hrungsunion"
+    }
+  },
+  "required": [
+    "zone",
+    "national_unit_rate_eur",
+    "global_unit_rate_eur"
+  ]
+}
