@@ -15,6 +15,7 @@ import {
 import { Input } from "@/components/ui/input";
 import FlightPlanMap from "@/components/FlightPlanMap";
 import FlightPlanSaver from "@/components/FlightPlanSaver";
+import RouteChargeCalculator from "@/components/RouteChargeCalculator";
 import AircraftSelector from "@/components/AircraftSelector";
 import { useAviationData } from "@/hooks/useAviationData";
 
@@ -317,6 +318,8 @@ export default function FlightPlan() {
             <AircraftSelector value={aircraft} onChange={setAircraft} />
           </div>
         </div>
+
+        <RouteChargeCalculator stops={stops} aircraft={aircraft} />
 
         <FlightPlanSaver
           stops={stops}
