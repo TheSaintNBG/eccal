@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { base44 } from "@/api/base44Client";
 import { MapContainer, TileLayer, Marker, useMapEvents } from "react-leaflet";
 import L from "leaflet";
-import { MapPin, Loader2, Globe2, Search, Navigation, Plane, Route, Coins } from "lucide-react";
+import { MapPin, Loader2, Globe2, Search, Navigation, Plane, Route, Coins, PlaneTakeoff } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -131,6 +131,10 @@ export default function Home() {
             <Link to="/routecharges" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-amber-500 transition-colors">
               <Coins className="w-4 h-4" />
               Streckengebühren
+            </Link>
+            <Link to="/aircraft" className="inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-indigo-500 transition-colors">
+              <PlaneTakeoff className="w-4 h-4" />
+              Flugzeuge
             </Link>
           </div>
         </div>

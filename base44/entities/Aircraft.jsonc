@@ -1,0 +1,22 @@
+{
+  "name": "Aircraft",
+  "type": "object",
+  "properties": {
+    "registration": {
+      "type": "string",
+      "description": "Flugzeugkennzeichen (z.B. D-ABCD)"
+    },
+    "type": {
+      "type": "string",
+      "description": "Flugzeugtyp (z.B. A320, B738)"
+    },
+    "mtow_tonnes": {
+      "type": "number",
+      "description": "Maximales Abfluggewicht (MTOW) in Tonnen"
+    }
+  },
+  "required": [
+    "registration",
+    "mtow_tonnes"
+  ]
+}
