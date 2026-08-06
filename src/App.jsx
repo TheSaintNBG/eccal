@@ -13,6 +13,7 @@ import Airports from '@/pages/Airports';
 import FlightPlan from '@/pages/FlightPlan';
 import RouteCharges from '@/pages/RouteCharges';
 import AircraftManager from '@/pages/AircraftManager';
+import Admin from '@/pages/Admin';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -41,7 +42,10 @@ const AuthenticatedApp = () => {
   return (
     <Routes>
       {/* Add your page Route elements here */}
-      <Route path="/" element={<Home />} />
+      <Route path="/" element={<FlightPlan />} />
+      <Route path="/admin" element={<Admin />} />
+      <Route path="/geofinder" element={<Home />} />
+      <Route path="/flightplan" element={<FlightPlan />} />
       <Route path="/waypoints" element={<Waypoints />} />
       <Route path="/airports" element={<Airports />} />
       <Route path="/flightplan" element={<FlightPlan />} />
