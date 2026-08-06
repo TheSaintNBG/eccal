@@ -47,8 +47,25 @@ export default function FlightPlanUpload({ onImport }) {
               items: {
                 type: "object",
                 properties: {
-                  ident: { type: "string" },
-                  raw: { type: "string" },
+                  ident: {
+                    type: "string",
+                    description: "Wegpunkt-Identifikator (z.B. ANSAD)",
+                  },
+                  latitude: {
+                    type: "string",
+                    description:
+                      "Breitengrad genau wie im PDF angegeben (z.B. N5234.5 oder 52.575)",
+                  },
+                  longitude: {
+                    type: "string",
+                    description:
+                      "Längengrad genau wie im PDF angegeben (z.B. E00956.7 oder 9.945)",
+                  },
+                  line: {
+                    type: "string",
+                    description:
+                      "Vollständige Textzeile dieses Wegpunkteintrags inkl. aller Koordinaten",
+                  },
                 },
               },
             },
@@ -58,9 +75,7 @@ export default function FlightPlanUpload({ onImport }) {
 
       const out = extracted?.output;
       const rawList =
-        (out && out.waypoints) ||
-        (Array.isArray(out) ? out : []) ||
-        [];
+        (out && out.waypoints) || (Array.isArray(out) ? out : []) || [];
 
       if (!rawList.length) {
         setError("Im PDF wurden keine Wegpunkte gefunden (Abschnitt WAYPOINT).");
@@ -68,11 +83,16 @@ export default function FlightPlanUpload({ onImport }) {
       }
 
       const lines = rawList
-        .map((w, i) => `${i + 1}. ${w.ident || ""} | ${w.raw || ""}`)
+        .map(
+          (w, i) =>
+            `${i + 1}. IDENT=${w.ident || ""} LAT=${w.latitude || ""} LON=${
+              w.longitude || ""
+            } LINE=${w.line || ""}`
+        )
         .join("\n");
 
       const parsed = await base44.integrations.Core.InvokeLLM({
-        prompt: `Aus einem Flugplan sind Wegpunkte aus dem Abschnitt WAYPOINT aufgelistet. Wandle die Koordinaten jeder Zeile in Dezimalgrad (Breitengrad latitude, Längengrad longitude) um. Gib für jeden Wegpunkt den Ident sowie latitude und longitude zurück. Lass Wegpunkte ohne erkennbare Koordinaten weg.\n\n${lines}`,
+        prompt: `Aus einem Flugplan sind Wegpunkte aus dem Abschnitt WAYPOINT aufgelistet. Jeder Eintrag enthält IDENT, ggf. LAT/LON und die vollständige Zeile (LINE). Wandle die Koordinaten in Dezimalgrad um. Typische Flugplan-Formate: N5234.5 = 52°34.5' = 52.575, E00956.7 = 9°56.7' = 9.945. N/S = +/- Breitengrad, E/W = +/- Längengrad. Nutze LAT/LON, falls vorhanden, sonst parse aus LINE. Gib für jeden Wegpunkt ident, latitude und longitude zurück. Lass Wegpunkte ohne erkennbare Koordinaten weg.\n\n${lines}`,
         response_json_schema: {
           type: "object",
           properties: {
