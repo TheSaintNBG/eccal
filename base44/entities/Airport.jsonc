@@ -1,0 +1,43 @@
+{
+  "name": "Airport",
+  "type": "object",
+  "properties": {
+    "icao": {
+      "type": "string",
+      "description": "ICAO-Code des Flughafens"
+    },
+    "iata": {
+      "type": "string",
+      "description": "IATA-Code des Flughafens"
+    },
+    "name": {
+      "type": "string",
+      "description": "Name des Flughafens"
+    },
+    "city": {
+      "type": "string",
+      "description": "Stadt"
+    },
+    "country": {
+      "type": "string",
+      "description": "Land"
+    },
+    "latitude": {
+      "type": "number",
+      "description": "Breitengrad als Dezimalgrad"
+    },
+    "longitude": {
+      "type": "number",
+      "description": "L\u00e4ngengrad als Dezimalgrad"
+    },
+    "elevation_ft": {
+      "type": "number",
+      "description": "H\u00f6he \u00fcber NN in Fu\u00df"
+    }
+  },
+  "required": [
+    "icao",
+    "name",
+    "country"
+  ]
+}

@@ -9,6 +9,7 @@ import ScrollToTop from './components/ScrollToTop';
 // Add page imports here
 import Home from '@/pages/Home';
 import Waypoints from '@/pages/Waypoints';
+import Airports from '@/pages/Airports';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError, navigateToLogin } = useAuth();
@@ -39,6 +40,7 @@ const AuthenticatedApp = () => {
       {/* Add your page Route elements here */}
       <Route path="/" element={<Home />} />
       <Route path="/waypoints" element={<Waypoints />} />
+      <Route path="/airports" element={<Airports />} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
