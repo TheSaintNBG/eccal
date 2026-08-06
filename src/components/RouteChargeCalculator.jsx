@@ -14,19 +14,6 @@ function haversineKm(lat1, lon1, lat2, lon2) {
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
-// Lineare Interpolation entlang der Strecke
-function interpolate(from, to, count) {
-  const pts = [];
-  for (let i = 0; i <= count; i++) {
-    const t = i / count;
-    pts.push({
-      lat: from.lat + (to.lat - from.lat) * t,
-      lng: from.lng + (to.lng - from.lng) * t,
-    });
-  }
-  return pts;
-}
-
 export default function RouteChargeCalculator({ stops, aircraft }) {
   const [charges, setCharges] = useState([]);
   const [zones, setZones] = useState({});
@@ -79,87 +66,62 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
     }
     setCalculating(true);
     try {
-      // Pro Abschnitt Stichproben erzeugen
-      const legSamples = legs.map((l) => {
-        const count = Math.min(40, Math.max(2, Math.ceil(l.km / 40)));
-        return interpolate(l.from, l.to, count);
-      });
-      const flat = [];
-      legSamples.forEach((s, li) =>
-        s.forEach((p, si) => flat.push({ leg: li, si, ...p }))
-      );
-
       const zoneNames = Object.keys(zones);
-      const coordList = flat
-        .map((p, idx) => `${idx + 1}. ${p.lat.toFixed(4)}, ${p.lng.toFixed(4)}`)
-        .join("\n");
 
-      const prompt = `Für jeden der folgenden geografischen Punkte (Breitengrad, Längengrad) bestimme das Land, in dem er liegt. Verwende AUSSCHLIESSLICH einen dieser Zonennamen, falls er passt: ${zoneNames.join(
-        ", "
-      )}. Wenn der Punkt in keinem dieser Länder liegt oder über See liegt, antworte mit einem leeren String. Gib die Zonen in exakt der gleichen Reihenfolge zurück.\n\nPunkte:\n${coordList}`;
-
-      const res = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            results: {
-              type: "array",
-              items: { type: "object", properties: { zone: { type: "string" } } },
+      // Pro Abschnitt die durchquerten Länder + Anteile + Grenzpunkte erfragen
+      const perLeg = await Promise.all(
+        legs.map(async (l, li) => {
+          const prompt = `Ein Flugzeug fliegt auf der geraden Luftlinie (Großkreis) von ${l.from.code} (${l.from.name}${l.from.country ? ", " + l.from.country : ""}) bei ${l.from.lat.toFixed(4)}, ${l.from.lng.toFixed(4)} nach ${l.to.code} (${l.to.name}${l.to.country ? ", " + l.to.country : ""}) bei ${l.to.lat.toFixed(4)}, ${l.to.lng.toFixed(4)} (Gesamtstrecke ca. ${l.km.toFixed(0)} km). Bestimme, in welcher Reihenfolge diese Luftlinie Länder durchquert. Gib für jeden Streckenabschnitt das durchquerte Land sowie den Anteil an der Gesamtstrecke an (Zahl zwischen 0 und 1; alle Anteile summieren sich zu 1). Gib zusätzlich den Punkt (lat, lng) an, an dem das Flugzeug in dieses Land eintritt (für das erste Land = Startpunkt). Verwende als Ländername AUSSCHLIESSLICH einen dieser Zonennamen, falls zutreffend: ${zoneNames.join(", ")}. Wenn ein Abschnitt über See oder ein nicht gelistetes Land verläuft, benutze einen leeren String als zone.`;
+          const res = await base44.integrations.Core.InvokeLLM({
+            prompt,
+            add_context_from_internet: true,
+            response_json_schema: {
+              type: "object",
+              properties: {
+                segments: {
+                  type: "array",
+                  items: {
+                    type: "object",
+                    properties: {
+                      zone: { type: "string" },
+                      fraction: { type: "number" },
+                      border_lat: { type: "number" },
+                      border_lng: { type: "number" },
+                    },
+                  },
+                },
+              },
             },
-          },
-        },
-      });
-
-      const resultZones = (res?.results || []).map((r) =>
-        (r?.zone || "").trim()
-      );
-
-      // pro Abschnitt auswerten
-      const perLeg = legSamples.map((samples, li) => {
-        const sz = samples.map((_, si) => resultZones[flat.findIndex((f) => f.leg === li && f.si === si)] || "");
-        // Gruppen gleicher Zone bilden
-        const groups = [];
-        let cur = null;
-        sz.forEach((z, idx) => {
-          if (!cur || cur.zone !== z) {
-            cur = { zone: z, points: [samples[idx]] };
-            groups.push(cur);
-          } else {
-            cur.points.push(samples[idx]);
-          }
-        });
-        // pro Gruppe Distanz + Gebühr
-        const segs = [];
-        groups.forEach((g) => {
-          let dist = 0;
-          for (let k = 1; k < g.points.length; k++) {
-            dist += haversineKm(
-              g.points[k - 1].lat,
-              g.points[k - 1].lng,
-              g.points[k].lat,
-              g.points[k].lng
-            );
-          }
-          const rate = g.zone ? zones[g.zone] ?? 0 : 0;
-          const charge = weightFactor * (dist / 100) * rate;
-          segs.push({ zone: g.zone, km: dist, rate, charge });
-        });
-        // Grenzübertritte = erster Punkt jeder Folgegruppe
-        const crossings = [];
-        for (let k = 1; k < groups.length; k++) {
-          crossings.push({
-            from: groups[k - 1].zone || "—",
-            to: groups[k].zone || "—",
-            lat: groups[k].points[0].lat,
-            lng: groups[k].points[0].lng,
           });
-        }
-        const legTotal = segs.reduce((s, x) => s + x.charge, 0);
-        const legChargeable = segs.filter((s) => s.zone);
-        return { leg: li, from: legs[li].from.code, to: legs[li].to.code, segs: legChargeable, crossings, legTotal };
-      });
+          const raw = res?.segments || [];
+          // Anteile normalisieren, falls sie nicht exakt 1 ergeben
+          const sum = raw.reduce((s, x) => s + (x.fraction || 0), 0) || 1;
+          const segs = raw.map((s) => {
+            const km = ((s.fraction || 0) / sum) * l.km;
+            const rate = s.zone ? zones[s.zone] ?? 0 : 0;
+            return {
+              zone: (s.zone || "").trim(),
+              km,
+              rate,
+              charge: weightFactor * (km / 100) * rate,
+              border_lat: s.border_lat ?? null,
+              border_lng: s.border_lng ?? null,
+            };
+          });
+          const legChargeable = segs.filter((s) => s.zone);
+          const crossings = [];
+          for (let k = 1; k < segs.length; k++) {
+            crossings.push({
+              from: segs[k - 1].zone || "—",
+              to: segs[k].zone || "—",
+              lat: segs[k].border_lat,
+              lng: segs[k].border_lng,
+            });
+          }
+          const legTotal = segs.reduce((s, x) => s + x.charge, 0);
+          return { leg: li, from: l.from.code, to: l.to.code, segs: legChargeable, crossings, legTotal };
+        })
+      );
 
       setCharges(perLeg);
     } catch (e) {
@@ -263,10 +225,17 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
                     <span
                       key={idx}
                       className="inline-flex items-center gap-1 text-xs text-slate-500 bg-white border border-slate-200 rounded-full px-2 py-1"
-                      title={`${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`}
+                      title={
+                        c.lat != null && c.lng != null
+                          ? `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`
+                          : "Grenzübertritt"
+                      }
                     >
                       <MapPin className="w-3 h-3 text-rose-400" />
-                      {c.from} → {c.to} ({c.lat.toFixed(3)}, {c.lng.toFixed(3)})
+                      {c.from} → {c.to}
+                      {c.lat != null && c.lng != null
+                        ? ` (${c.lat.toFixed(3)}, ${c.lng.toFixed(3)})`
+                        : ""}
                     </span>
                   ))}
                 </div>
