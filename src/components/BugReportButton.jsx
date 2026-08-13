@@ -6,7 +6,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 
-const RECIPIENT = "jirka1975@gmx.de";
+const RECIPIENT = "jirka.lissewski@icloud.com";
 
 export default function BugReportButton() {
   const [open, setOpen] = useState(false);
