@@ -7,6 +7,7 @@ import {
   Plane,
   Coins,
   PlaneTakeoff,
+  ShieldCheck,
 } from "lucide-react";
 
 const NAV = [
@@ -16,6 +17,7 @@ const NAV = [
   { to: "/airports", label: "Flughäfen", icon: Plane },
   { to: "/routecharges", label: "Gebühren", icon: Coins },
   { to: "/aircraft", label: "Flugzeuge", icon: PlaneTakeoff },
+  { to: "/admin", label: "Admin", icon: ShieldCheck },
 ];
 
 function isActive(pathname, to) {
