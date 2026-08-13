@@ -2,9 +2,6 @@ import React from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
   Route as RouteIcon,
-  Globe2,
-  Navigation,
-  Plane,
   Coins,
   PlaneTakeoff,
   ShieldCheck,
@@ -12,9 +9,6 @@ import {
 
 const NAV = [
   { to: "/", label: "Flugplan", icon: RouteIcon },
-  { to: "/geofinder", label: "GeoFinder", icon: Globe2 },
-  { to: "/waypoints", label: "Wegpunkte", icon: Navigation },
-  { to: "/airports", label: "Flughäfen", icon: Plane },
   { to: "/routecharges", label: "Gebühren", icon: Coins },
   { to: "/aircraft", label: "Flugzeuge", icon: PlaneTakeoff },
   { to: "/admin", label: "Admin", icon: ShieldCheck },
