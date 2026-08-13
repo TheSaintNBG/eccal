@@ -20,6 +20,7 @@ import FlightPlan from '@/pages/FlightPlan';
 import RouteCharges from '@/pages/RouteCharges';
 import AircraftManager from '@/pages/AircraftManager';
 import Admin from '@/pages/Admin';
+import BugReportButton from '@/components/BugReportButton';
 
 const AuthenticatedApp = () => {
   const { isLoadingAuth, isLoadingPublicSettings, authError } = useAuth();
@@ -66,6 +67,9 @@ const AuthenticatedApp = () => {
   );
 };
 
+// Floating bug report button shown on every screen
+const FloatingBugReport = () => <BugReportButton />;
+
 
 function App() {
 
@@ -75,6 +79,7 @@ function App() {
         <Router>
           <ScrollToTop />
           <AuthenticatedApp />
+          <FloatingBugReport />
         </Router>
         <Toaster />
       </QueryClientProvider>
