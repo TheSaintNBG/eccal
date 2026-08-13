@@ -7,7 +7,9 @@ import {
   Plane,
   Coins,
   PlaneTakeoff,
+  LayoutGrid,
 } from "lucide-react";
+import AppNav from "@/components/AppNav";
 
 const cards = [
   {
@@ -50,22 +52,12 @@ const cards = [
 export default function Admin() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
-          <Link
-            to="/"
-            className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
-          </Link>
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight text-slate-900">
-              Admin
-            </h1>
-            <p className="text-xs text-slate-500">Datenverwaltung</p>
-          </div>
-        </div>
-      </header>
+      <AppNav
+        title="Admin"
+        subtitle="Datenverwaltung"
+        icon={LayoutGrid}
+        accent="from-slate-500 to-slate-700"
+      />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">

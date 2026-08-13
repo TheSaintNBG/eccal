@@ -3,6 +3,7 @@ import { base44 } from "@/api/base44Client";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Coins, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
+import AppNav from "@/components/AppNav";
 
 export default function RouteCharges() {
   const [charges, setCharges] = useState([]);
@@ -33,27 +34,12 @@ export default function RouteCharges() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-amber-50">
-      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
-          <Link
-            to="/admin"
-            className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors"
-          >
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
-          </Link>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-amber-500 to-orange-500 flex items-center justify-center shadow-lg shadow-amber-500/20">
-            <Coins className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight text-slate-900">
-              Streckengebühren
-            </h1>
-            <p className="text-xs text-slate-500">
-              EUROCONTROL Route Charges · August 2026
-            </p>
-          </div>
-        </div>
-      </header>
+      <AppNav
+        title="Streckengebühren"
+        subtitle="EUROCONTROL Route Charges · August 2026"
+        icon={Coins}
+        accent="from-amber-500 to-orange-500"
+      />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">

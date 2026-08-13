@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Search, Loader2, Navigation, Database, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import WaypointMap from "@/components/WaypointMap";
+import AppNav from "@/components/AppNav";
 
 export default function Waypoints() {
   const [waypoints, setWaypoints] = useState([]);
@@ -30,20 +31,12 @@ export default function Waypoints() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
-      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
-          <Link to="/admin" className="w-10 h-10 rounded-xl bg-slate-100 hover:bg-slate-200 flex items-center justify-center transition-colors">
-            <ArrowLeft className="w-5 h-5 text-slate-600" />
-          </Link>
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
-            <Navigation className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight text-slate-900">Wegpunkte Deutschland</h1>
-            <p className="text-xs text-slate-500">Quelle: opennav.com/waypoint/DE</p>
-          </div>
-        </div>
-      </header>
+      <AppNav
+        title="Wegpunkte Deutschland"
+        subtitle="Quelle: opennav.com/waypoint/DE"
+        icon={Navigation}
+        accent="from-rose-500 to-pink-500"
+      />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-2 gap-8">

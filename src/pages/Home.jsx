@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import ResultCard from "@/components/ResultCard";
+import AppNav from "@/components/AppNav";
 import "leaflet/dist/leaflet.css";
 
 // Eigenes Marker-Icon
@@ -106,21 +107,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100">
       {/* Header */}
-      <header className="border-b border-slate-200/60 bg-white/80 backdrop-blur-md sticky top-0 z-10">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-rose-500 to-orange-500 flex items-center justify-center shadow-lg shadow-rose-500/20">
-            <Globe2 className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <h1 className="text-lg font-semibold tracking-tight text-slate-900">GeoFinder</h1>
-            <p className="text-xs text-slate-500">Land anhand von Koordinaten bestimmen</p>
-          </div>
-          <Link to="/admin" className="ml-auto inline-flex items-center gap-2 text-sm font-medium text-slate-600 hover:text-rose-500 transition-colors">
-            <ArrowLeft className="w-4 h-4" />
-            Admin
-          </Link>
-        </div>
-      </header>
+      <AppNav
+        title="GeoFinder"
+        subtitle="Land anhand von Koordinaten bestimmen"
+        icon={Globe2}
+        accent="from-rose-500 to-orange-500"
+      />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid lg:grid-cols-2 gap-8">
