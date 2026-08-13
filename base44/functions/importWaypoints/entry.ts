@@ -38,6 +38,28 @@ export default async function(req) {
       return null;
     };
 
+    // DMS-Format parsen, z.B. "N404519" -> 40.755278, "E0183830" -> 18.641667
+    const parseDms = (raw) => {
+      if (raw == null) return null;
+      const s = String(raw).trim().toUpperCase();
+      const m = s.match(/^([NSEW])\s*(\d{1,3})(\d{2})(\d{2})(?:\.\d+)?$/);
+      if (!m) return null;
+      const deg = parseInt(m[2], 10);
+      const min = parseInt(m[3], 10);
+      const sec = parseInt(m[4], 10);
+      let dec = deg + min / 60 + sec / 3600;
+      if (m[1] === 'S' || m[1] === 'W') dec = -dec;
+      return dec;
+    };
+
+    const toNum = (raw) => {
+      if (raw == null) return null;
+      const dms = parseDms(raw);
+      if (dms != null) return dms;
+      const n = parseFloat(String(raw).replace(',', '.'));
+      return isNaN(n) ? null : n;
+    };
+
     const waypoints = [];
     let headerKeys = [];
     let sampleRow = null;
@@ -48,18 +70,20 @@ export default async function(req) {
       const rowMap = {};
       for (const k of keys) rowMap[norm(k)] = r[k];
       const ident = pick(rowMap, ['fra point', 'ident', 'fra point.1']);
-      const lat = pick(rowMap, ['fra point latitude', 'latitude', 'lat']);
-      const lng = pick(rowMap, ['fra point longitude', 'longitude', 'lng']);
-      if (ident == null || lat == null || lng == null) continue;
-      const latNum = parseFloat(String(lat).replace(',', '.'));
-      const lngNum = parseFloat(String(lng).replace(',', '.'));
-      if (isNaN(latNum) || isNaN(lngNum)) continue;
+      const latRaw = pick(rowMap, ['fra point latitude', 'latitude', 'lat']);
+      const lngRaw = pick(rowMap, ['fra point longitude', 'longitude', 'lng']);
+      if (ident == null || latRaw == null || lngRaw == null) continue;
+      const latNum = toNum(latRaw);
+      const lngNum = toNum(lngRaw);
+      if (latNum == null || lngNum == null) continue;
       const identStr = String(ident).trim();
       if (!identStr) continue;
       waypoints.push({
         ident: identStr,
         latitude: latNum,
         longitude: lngNum,
+        lat_dms: String(latRaw),
+        lng_dms: String(lngRaw),
         country_code: 'DE',
       });
     }
