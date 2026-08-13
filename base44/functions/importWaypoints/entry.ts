@@ -39,9 +39,14 @@ export default async function(req) {
     };
 
     const waypoints = [];
+    let headerKeys = [];
+    let sampleRow = null;
     for (const r of rows) {
+      const keys = Object.keys(r);
+      if (headerKeys.length === 0) headerKeys = keys;
+      if (!sampleRow) sampleRow = r;
       const rowMap = {};
-      for (const k of Object.keys(r)) rowMap[norm(k)] = r[k];
+      for (const k of keys) rowMap[norm(k)] = r[k];
       const ident = pick(rowMap, ['fra point', 'ident', 'fra point.1']);
       const lat = pick(rowMap, ['fra point latitude', 'latitude', 'lat']);
       const lng = pick(rowMap, ['fra point longitude', 'longitude', 'lng']);
@@ -60,7 +65,17 @@ export default async function(req) {
     }
 
     if (waypoints.length === 0) {
-      return Response.json({ error: 'Keine gültigen Wegpunkte in der Datei gefunden.' }, { status: 400 });
+      return Response.json(
+        {
+          error: 'Keine gültigen Wegpunkte in der Datei gefunden.',
+          matchedSheet: sheetName,
+          sheetNames: wb.SheetNames,
+          rowCount: rows.length,
+          headerKeys,
+          sampleRow,
+        },
+        { status: 400 }
+      );
     }
 
     // Alle bestehenden Wegpunkte ersetzen
