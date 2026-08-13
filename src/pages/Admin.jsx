@@ -10,6 +10,7 @@ import {
   LayoutGrid,
 } from "lucide-react";
 import AppNav from "@/components/AppNav";
+import PasswordGate from "@/components/PasswordGate";
 
 const cards = [
   {
@@ -59,7 +60,8 @@ export default function Admin() {
         accent="from-slate-500 to-slate-700"
       />
 
-      <main className="max-w-6xl mx-auto px-6 py-8">
+      <PasswordGate>
+        <main className="max-w-6xl mx-auto px-6 py-8">
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {cards.map((c) => {
             const Icon = c.icon;
@@ -83,6 +85,7 @@ export default function Admin() {
           })}
         </div>
       </main>
+      </PasswordGate>
     </div>
   );
 }
