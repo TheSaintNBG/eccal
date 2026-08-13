@@ -1,8 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.40';
 import * as XLSX from 'npm:xlsx@0.18.5';
 
-const SHEET = 'FRA Points';
-
 export default async function(req) {
   try {
     const base44 = createClientFromRequest(req);
@@ -19,30 +17,37 @@ export default async function(req) {
     const ab = await res.arrayBuffer();
     const wb = XLSX.read(ab, { type: 'array' });
 
-    if (!wb.SheetNames.includes(SHEET)) {
+    const norm = (s) => String(s).trim().toLowerCase().replace(/\s+/g, ' ');
+    const sheetName =
+      wb.SheetNames.find((n) => norm(n) === 'fra points') ||
+      wb.SheetNames.find((n) => norm(n).includes('fra points')) ||
+      wb.SheetNames.find((n) => norm(n).includes('fra'));
+    if (!sheetName) {
       return Response.json(
-        { error: `Tabellenblatt "${SHEET}" nicht gefunden. Vorhanden: ${wb.SheetNames.join(', ')}` },
+        { error: `Tabellenblatt "FRA Points" nicht gefunden. Vorhanden: ${wb.SheetNames.join(', ')}` },
         { status: 400 }
       );
     }
-    const ws = wb.Sheets[SHEET];
+    const ws = wb.Sheets[sheetName];
     const rows = XLSX.utils.sheet_to_json(ws, { defval: null });
 
-    const pick = (r, keys) => {
+    const pick = (rowMap, keys) => {
       for (const k of keys) {
-        if (r[k] != null && r[k] !== '') return r[k];
+        if (rowMap[k] != null && rowMap[k] !== '') return rowMap[k];
       }
       return null;
     };
 
     const waypoints = [];
     for (const r of rows) {
-      const ident = pick(r, ['FRA Point', 'IDENT', 'FRA Point.1', 'Ident']);
-      const lat = pick(r, ['FRA Point Latitude', 'Latitude', 'LAT', 'Lat']);
-      const lng = pick(r, ['FRA Point Longitude', 'Longitude', 'LNG', 'Lng']);
+      const rowMap = {};
+      for (const k of Object.keys(r)) rowMap[norm(k)] = r[k];
+      const ident = pick(rowMap, ['fra point', 'ident', 'fra point.1']);
+      const lat = pick(rowMap, ['fra point latitude', 'latitude', 'lat']);
+      const lng = pick(rowMap, ['fra point longitude', 'longitude', 'lng']);
       if (ident == null || lat == null || lng == null) continue;
-      const latNum = parseFloat(String(lat));
-      const lngNum = parseFloat(String(lng));
+      const latNum = parseFloat(String(lat).replace(',', '.'));
+      const lngNum = parseFloat(String(lng).replace(',', '.'));
       if (isNaN(latNum) || isNaN(lngNum)) continue;
       const identStr = String(ident).trim();
       if (!identStr) continue;

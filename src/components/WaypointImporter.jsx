@@ -29,7 +29,7 @@ export default function WaypointImporter({ onDone }) {
       setResult(data);
       onDone?.();
     } catch (err) {
-      setError(err?.message || "Import fehlgeschlagen");
+      setError(err?.response?.data?.error || err?.message || "Import fehlgeschlagen");
     } finally {
       setBusy(false);
       e.target.value = "";
