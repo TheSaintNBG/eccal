@@ -1,10 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { base44 } from "@/api/base44Client";
 import {
   Route as RouteIcon,
   Coins,
   PlaneTakeoff,
   ShieldCheck,
+  LogOut,
+  Loader2,
 } from "lucide-react";
 
 const NAV = [
@@ -21,6 +24,12 @@ function isActive(pathname, to) {
 
 export default function AppNav({ title, subtitle, icon: Icon, accent = "from-rose-500 to-orange-500" }) {
   const { pathname } = useLocation();
+  const [loggingOut, setLoggingOut] = useState(false);
+
+  const handleLogout = async () => {
+    setLoggingOut(true);
+    await base44.auth.logout();
+  };
 
   const renderItem = (item, mobile = false) => {
     const active = isActive(pathname, item.to);
@@ -51,10 +60,31 @@ export default function AppNav({ title, subtitle, icon: Icon, accent = "from-ros
           </Link>
           <nav className="ml-auto hidden md:flex items-center gap-1">
             {NAV.map((i) => renderItem(i))}
+            <button
+              onClick={handleLogout}
+              disabled={loggingOut}
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors disabled:opacity-50"
+              title="Abmelden"
+            >
+              {loggingOut ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <LogOut className="w-4 h-4" />
+              )}
+              Abmelden
+            </button>
           </nav>
         </div>
         <nav className="md:hidden flex items-center gap-1 overflow-x-auto pb-2 -mx-1 px-1 no-scrollbar">
           {NAV.map((i) => renderItem(i, true))}
+          <button
+            onClick={handleLogout}
+            disabled={loggingOut}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-rose-50 hover:text-rose-600 transition-colors disabled:opacity-50 shrink-0"
+          >
+            <LogOut className="w-4 h-4" />
+            Abmelden
+          </button>
         </nav>
         {title && (
           <div className="flex items-center gap-3 py-3 border-t border-slate-100">
