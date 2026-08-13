@@ -12,6 +12,7 @@ export default function WaypointImporter({ onDone }) {
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState(null);
   const [error, setError] = useState("");
+  const [diag, setDiag] = useState(null);
 
   const handleFile = async (e) => {
     const file = e.target.files?.[0];
@@ -19,6 +20,7 @@ export default function WaypointImporter({ onDone }) {
     setBusy(true);
     setError("");
     setResult(null);
+    setDiag(null);
     try {
       const up = await base44.integrations.Core.UploadFile({ file });
       const res = await base44.functions.invoke("importWaypoints", {
@@ -29,7 +31,9 @@ export default function WaypointImporter({ onDone }) {
       setResult(data);
       onDone?.();
     } catch (err) {
-      setError(err?.response?.data?.error || err?.message || "Import fehlgeschlagen");
+      const d = err?.response?.data;
+      setError(d?.error || err?.message || "Import fehlgeschlagen");
+      setDiag(d || null);
     } finally {
       setBusy(false);
       e.target.value = "";
@@ -84,6 +88,42 @@ export default function WaypointImporter({ onDone }) {
           </span>
         )}
       </div>
+      {diag && (
+        <div className="mt-3 rounded-lg border border-slate-200 bg-white p-3 text-xs text-slate-600 overflow-x-auto">
+          {diag.matchedSheet != null && (
+            <div className="mb-1">
+              <span className="text-slate-400">Erkanntes Blatt: </span>
+              <span className="font-mono">{String(diag.matchedSheet)}</span>
+            </div>
+          )}
+          {Array.isArray(diag.sheetNames) && (
+            <div className="mb-1">
+              <span className="text-slate-400">Blätter in Datei: </span>
+              <span className="font-mono">{diag.sheetNames.join(", ")}</span>
+            </div>
+          )}
+          {diag.rowCount != null && (
+            <div className="mb-1">
+              <span className="text-slate-400">Zeilen: </span>
+              <span className="font-mono">{diag.rowCount}</span>
+            </div>
+          )}
+          {Array.isArray(diag.headerKeys) && diag.headerKeys.length > 0 && (
+            <div className="mb-1">
+              <span className="text-slate-400">Spaltenköpfe: </span>
+              <span className="font-mono">{diag.headerKeys.join(" | ")}</span>
+            </div>
+          )}
+          {diag.sampleRow && (
+            <div>
+              <span className="text-slate-400">Beispielzeile: </span>
+              <pre className="mt-1 whitespace-pre-wrap break-all font-mono text-[11px] text-slate-500">
+                {JSON.stringify(diag.sampleRow)}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
     </div>
   );
 }
