@@ -88,7 +88,7 @@ export default function AircraftSelector({ value, onChange }) {
                 ) : null}
                 {a.mtow_tonnes != null ? (
                   <span className="text-xs text-slate-400 ml-auto">
-                    {a.mtow_tonnes} t · √(MTOW/50) {Math.sqrt(a.mtow_tonnes / 50).toFixed(3)}
+                    {a.mtow_tonnes} t
                   </span>
                 ) : null}
               </button>
