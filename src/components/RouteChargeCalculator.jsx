@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/button";
 
 function haversineKm(lat1, lon1, lat2, lon2) {
   const R = 6371;
-  const toRad = (d) => (d * Math.PI) / 180;
+  const toRad = (d) => d * Math.PI / 180;
   const dLat = toRad(lat2 - lat1);
   const dLon = toRad(lon2 - lon1);
   const a =
-    Math.sin(dLat / 2) ** 2 +
-    Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
+  Math.sin(dLat / 2) ** 2 +
+  Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLon / 2) ** 2;
   return 2 * R * Math.asin(Math.sqrt(a));
 }
 
@@ -31,17 +31,17 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
         });
         setZones(map);
       } catch (e) {
+
         // ignore
-      } finally {
-        setLoadingData(false);
+      } finally {setLoadingData(false);
       }
     })();
   }, []);
 
   const weightFactor =
-    aircraft && aircraft.mtow_tonnes != null
-      ? Math.sqrt(aircraft.mtow_tonnes / 50)
-      : null;
+  aircraft && aircraft.mtow_tonnes != null ?
+  Math.sqrt(aircraft.mtow_tonnes / 50) :
+  null;
 
   // gültige Abschnitte
   const legs = [];
@@ -86,18 +86,18 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
                       zone: { type: "string" },
                       fraction: { type: "number" },
                       border_lat: { type: "number" },
-                      border_lng: { type: "number" },
-                    },
-                  },
-                },
-              },
-            },
+                      border_lng: { type: "number" }
+                    }
+                  }
+                }
+              }
+            }
           });
           const raw = res?.segments || [];
           // Anteile normalisieren, falls sie nicht exakt 1 ergeben
           const sum = raw.reduce((s, x) => s + (x.fraction || 0), 0) || 1;
           const segs = raw.map((s) => {
-            const km = ((s.fraction || 0) / sum) * l.km;
+            const km = (s.fraction || 0) / sum * l.km;
             const rate = s.zone ? zones[s.zone] ?? 0 : 0;
             return {
               zone: (s.zone || "").trim(),
@@ -105,7 +105,7 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
               rate,
               charge: weightFactor * (km / 100) * rate,
               border_lat: s.border_lat ?? null,
-              border_lng: s.border_lng ?? null,
+              border_lng: s.border_lng ?? null
             };
           });
           const legChargeable = segs.filter((s) => s.zone);
@@ -115,7 +115,7 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
               from: segs[k - 1].zone || "—",
               to: segs[k].zone || "—",
               lat: segs[k].border_lat,
-              lng: segs[k].border_lng,
+              lng: segs[k].border_lng
             });
           }
           const legTotal = segs.reduce((s, x) => s + x.charge, 0);
@@ -145,40 +145,40 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
         <Button
           onClick={calculate}
           disabled={calculating || loadingData}
-          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white"
-        >
-          {calculating ? (
-            <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-          ) : (
-            <Calculator className="w-4 h-4 mr-2" />
-          )}
+          className="bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white">
+          
+          {calculating ?
+          <Loader2 className="w-4 h-4 mr-2 animate-spin" /> :
+
+          <Calculator className="w-4 h-4 mr-2" />
+          }
           Berechnen
         </Button>
-        {weightFactor != null && (
-          <span className="text-xs text-slate-500 bg-slate-100 rounded-full px-3 py-1">
+        {weightFactor != null &&
+        <span className="text-xs text-slate-500 bg-slate-100 rounded-full px-3 py-1">
             Gewichtsfaktor {weightFactor.toFixed(3)} · {aircraft.registration}
           </span>
-        )}
+        }
       </div>
 
-      {error && (
-        <p className="text-sm text-rose-600 mb-4 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2 flex items-center gap-2">
+      {error &&
+      <p className="text-sm text-rose-600 mb-4 bg-rose-50 border border-rose-100 rounded-lg px-3 py-2 flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           {error}
         </p>
-      )}
+      }
 
-      {!hasResult && !error && (
-        <p className="text-xs text-slate-400">
+      {!hasResult && !error &&
+      <p className="text-xs text-slate-400 hidden">
           Formel: Gebühr = Gewichtsfaktor × (Strecke/100) × Landessatz. Grenzübertritte
           werden pro Abschnitt ermittelt.
         </p>
-      )}
+      }
 
-      {hasResult && (
-        <div className="space-y-4">
-          {charges.map((l) => (
-            <div key={l.leg} className="rounded-lg border border-slate-200 overflow-hidden">
+      {hasResult &&
+      <div className="space-y-4">
+          {charges.map((l) =>
+        <div key={l.leg} className="rounded-lg border border-slate-200 overflow-hidden">
               <div className="bg-slate-50 px-3 py-2 flex items-center justify-between">
                 <span className="font-mono text-sm font-medium text-slate-800">
                   {l.from} → {l.to}
@@ -187,12 +187,12 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
                   {l.legTotal.toFixed(2)} €
                 </span>
               </div>
-              {l.segs.length === 0 ? (
-                <p className="px-3 py-2 text-xs text-slate-400">
+              {l.segs.length === 0 ?
+          <p className="px-3 py-2 text-xs text-slate-400">
                   Keine Gebührenzone auf diesem Abschnitt.
-                </p>
-              ) : (
-                <table className="w-full text-sm">
+                </p> :
+
+          <table className="w-full text-sm">
                   <thead>
                     <tr className="text-xs text-slate-400 border-b border-slate-100">
                       <th className="px-3 py-1.5 text-left font-medium">Land</th>
@@ -202,8 +202,8 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
                     </tr>
                   </thead>
                   <tbody>
-                    {l.segs.map((s, idx) => (
-                      <tr key={idx} className="border-b border-slate-50 last:border-0">
+                    {l.segs.map((s, idx) =>
+              <tr key={idx} className="border-b border-slate-50 last:border-0">
                         <td className="px-3 py-1.5 text-slate-700">{s.zone}</td>
                         <td className="px-3 py-1.5 text-right tabular-nums text-slate-600">
                           {s.km.toFixed(1)}
@@ -215,33 +215,33 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
                           {s.charge.toFixed(2)}
                         </td>
                       </tr>
-                    ))}
+              )}
                   </tbody>
                 </table>
-              )}
-              {l.crossings.length > 0 && (
-                <div className="px-3 py-2 bg-slate-50/50 border-t border-slate-100 flex flex-wrap gap-2">
-                  {l.crossings.map((c, idx) => (
-                    <span
-                      key={idx}
-                      className="inline-flex items-center gap-1 text-xs text-slate-500 bg-white border border-slate-200 rounded-full px-2 py-1"
-                      title={
-                        c.lat != null && c.lng != null
-                          ? `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}`
-                          : "Grenzübertritt"
-                      }
-                    >
+          }
+              {l.crossings.length > 0 &&
+          <div className="px-3 py-2 bg-slate-50/50 border-t border-slate-100 flex flex-wrap gap-2">
+                  {l.crossings.map((c, idx) =>
+            <span
+              key={idx}
+              className="inline-flex items-center gap-1 text-xs text-slate-500 bg-white border border-slate-200 rounded-full px-2 py-1"
+              title={
+              c.lat != null && c.lng != null ?
+              `${c.lat.toFixed(4)}, ${c.lng.toFixed(4)}` :
+              "Grenzübertritt"
+              }>
+              
                       <MapPin className="w-3 h-3 text-rose-400" />
                       {c.from} → {c.to}
-                      {c.lat != null && c.lng != null
-                        ? ` (${c.lat.toFixed(3)}, ${c.lng.toFixed(3)})`
-                        : ""}
+                      {c.lat != null && c.lng != null ?
+              ` (${c.lat.toFixed(3)}, ${c.lng.toFixed(3)})` :
+              ""}
                     </span>
-                  ))}
+            )}
                 </div>
-              )}
+          }
             </div>
-          ))}
+        )}
 
           <div className="flex items-center justify-between rounded-lg bg-amber-500 px-4 py-3">
             <span className="text-sm font-medium text-white/90">Gesamte Streckengebühr</span>
@@ -250,7 +250,7 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
             </span>
           </div>
         </div>
-      )}
-    </div>
-  );
+      }
+    </div>);
+
 }
