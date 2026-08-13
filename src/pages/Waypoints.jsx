@@ -14,8 +14,19 @@ export default function Waypoints() {
   useEffect(() => {
     (async () => {
       try {
-        const data = await base44.entities.Waypoint.list("-ident", 2000);
-        setWaypoints(data);
+        const LIMIT = 5000;
+        let all = [];
+        let cursor = null;
+        for (let i = 0; i < 20; i++) {
+          const batch =
+            cursor === null
+              ? await base44.entities.Waypoint.list("-ident", LIMIT)
+              : await base44.entities.Waypoint.filter({ ident: { $lt: cursor } }, "-ident", LIMIT);
+          all = all.concat(batch);
+          if (batch.length < LIMIT) break;
+          cursor = batch[batch.length - 1].ident;
+        }
+        setWaypoints(all);
       } catch (e) {
         // ignore
       } finally {
