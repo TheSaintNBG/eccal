@@ -4,6 +4,7 @@ import { Link } from "react-router-dom";
 import { Search, Loader2, Navigation, Database, ArrowLeft } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import WaypointMap from "@/components/WaypointMap";
+import WaypointImporter from "@/components/WaypointImporter";
 import AppNav from "@/components/AppNav";
 
 export default function Waypoints() {
@@ -11,28 +12,31 @@ export default function Waypoints() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const LIMIT = 5000;
-        let all = [];
-        let cursor = null;
-        for (let i = 0; i < 20; i++) {
-          const batch =
-            cursor === null
-              ? await base44.entities.Waypoint.list("-ident", LIMIT)
-              : await base44.entities.Waypoint.filter({ ident: { $lt: cursor } }, "-ident", LIMIT);
-          all = all.concat(batch);
-          if (batch.length < LIMIT) break;
-          cursor = batch[batch.length - 1].ident;
-        }
-        setWaypoints(all);
-      } catch (e) {
-        // ignore
-      } finally {
-        setLoading(false);
+  const load = async () => {
+    setLoading(true);
+    try {
+      const LIMIT = 5000;
+      let all = [];
+      let cursor = null;
+      for (let i = 0; i < 20; i++) {
+        const batch =
+          cursor === null
+            ? await base44.entities.Waypoint.list("-ident", LIMIT)
+            : await base44.entities.Waypoint.filter({ ident: { $lt: cursor } }, "-ident", LIMIT);
+        all = all.concat(batch);
+        if (batch.length < LIMIT) break;
+        cursor = batch[batch.length - 1].ident;
       }
-    })();
+      setWaypoints(all);
+    } catch (e) {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
   }, []);
 
   const q = search.trim().toLowerCase();
@@ -50,7 +54,9 @@ export default function Waypoints() {
       />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="grid lg:grid-cols-2 gap-8">
+        <WaypointImporter onDone={load} />
+
+        <div className="grid lg:grid-cols-2 gap-8 mt-6">
           {/* Tabelle + Suche */}
           <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
             <div className="flex items-center justify-between mb-4">
