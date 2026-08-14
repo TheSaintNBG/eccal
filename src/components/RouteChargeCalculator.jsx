@@ -64,6 +64,23 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
       setError("Mindestens zwei Stationen mit Koordinaten nötig.");
       return;
     }
+
+    // Flugzeuge unter 2 t MTOW sind von Streckengebühren befreit → 0 €
+    if (aircraft && aircraft.mtow_tonnes != null && aircraft.mtow_tonnes < 2) {
+      setCharges(
+        legs.map((l, li) => ({
+          leg: li,
+          from: l.from.code,
+          to: l.to.code,
+          segs: [],
+          crossings: [],
+          legTotal: 0,
+          exempt: true,
+        }))
+      );
+      return;
+    }
+
     setCalculating(true);
     try {
       const zoneNames = Object.keys(zones);
@@ -189,7 +206,9 @@ export default function RouteChargeCalculator({ stops, aircraft }) {
               </div>
               {l.segs.length === 0 ?
           <p className="px-3 py-2 text-xs text-slate-400">
-                  Keine Gebührenzone auf diesem Abschnitt.
+                  {l.exempt
+                    ? "Befreit – Flugzeug unter 2 t MTOW."
+                    : "Keine Gebührenzone auf diesem Abschnitt."}
                 </p> :
 
           <table className="w-full text-sm">
