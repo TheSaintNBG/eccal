@@ -4,23 +4,27 @@ import { Link } from "react-router-dom";
 import { ArrowLeft, Coins, Search, Loader2 } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import AppNav from "@/components/AppNav";
+import RouteChargeUploader from "@/components/RouteChargeUploader";
 
 export default function RouteCharges() {
   const [charges, setCharges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
+  const reload = async () => {
+    setLoading(true);
+    try {
+      const data = await base44.entities.RouteCharge.list("-national_unit_rate_eur", 200);
+      setCharges(data);
+    } catch (e) {
+      // ignore
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
-    (async () => {
-      try {
-        const data = await base44.entities.RouteCharge.list("-national_unit_rate_eur", 200);
-        setCharges(data);
-      } catch (e) {
-        // ignore
-      } finally {
-        setLoading(false);
-      }
-    })();
+    reload();
   }, []);
 
   const q = search.trim().toLowerCase();
@@ -42,7 +46,9 @@ export default function RouteCharges() {
       />
 
       <main className="max-w-6xl mx-auto px-6 py-8">
-        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6">
+        <RouteChargeUploader onUpdated={reload} />
+
+        <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 mt-6">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-sm font-semibold text-slate-700 flex items-center gap-2">
               <Coins className="w-4 h-4 text-amber-500" />
