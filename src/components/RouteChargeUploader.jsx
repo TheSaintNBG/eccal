@@ -102,7 +102,7 @@ export default function RouteChargeUploader({ onUpdated }) {
     setBusy(true);
     setStage("Bestehende Preise werden gelöscht…");
     try {
-      await base44.asServiceRole.entities.RouteCharge.deleteMany({});
+      await base44.entities.RouteCharge.deleteMany({});
       setStage("Neue Preise werden gespeichert…");
       await base44.entities.RouteCharge.bulkCreate(extracted);
       setStatus({ type: "success", msg: `${extracted.length} Zonen erfolgreich ersetzt.` });
